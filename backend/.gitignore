@@ -1,0 +1,39 @@
+# 🐍 Entorno virtual de Python
+venv/
+env/
+backend/venv/
+backend/env/
+
+# 🧠 Archivos generados por Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# ⚙️ Configuración de VSCode
+.vscode/
+
+# 🛠 Archivos de entorno
+.env
+.env.*
+
+# 📄 Logs y temporales
+*.log
+*.tmp
+*.bak
+
+# 🪟 Archivos de sistema de Windows/macOS
+Thumbs.db
+.DS_Store
+
+# ⚛️ Node.js / React
+node_modules/
+build/
+dist/
+
+# 📦 Lock files (opcional)
+package-lock.json
+yarn.lock
+
+# 🔍 Archivos de bases de datos
+*.sqlite3
+*.db
