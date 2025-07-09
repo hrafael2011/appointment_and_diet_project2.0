@@ -2,7 +2,10 @@
 FROM node:18 AS build
 WORKDIR /app
 COPY package.json package-lock.json ./
-RUN npm install
+RUN npm install && ls -l node_modules/.bin
+ENV PATH="./node_modules/.bin:$PATH"  
+RUN chmod -R 755 /app 
+RUN chmod -R 755 /app/node_modules/.bin  
 COPY . .
 RUN npm run build
 

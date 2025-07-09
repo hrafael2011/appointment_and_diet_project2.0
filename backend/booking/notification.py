@@ -88,7 +88,7 @@ def schedule_reminders(appointment):
         )
 
     # Programar recordatorio 1 hora antes (si no se ha enviado)
-    form_link = f"http://localhost:5173/informacion-personal-form/{appointment.patient.id}"
+    form_link = f"http://localhost:3000/informacion-personal-form/{appointment.patient.id}"
     info_form_link = f"Complete sus datos {form_link}"
     if not appointment.reminder_1h_sent and reminder_1_hour_before > now:
         send_reminder_email.apply_async(

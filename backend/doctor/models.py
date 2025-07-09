@@ -13,6 +13,14 @@ class Doctor(models.Model):
         return self.name
     
 
+    def save(self, *args, **kwargs):
+        if self.user and not self.email:
+            self.email = self.user.email
+        super().save(*args, **kwargs)
+    
+
+    
+
 class DoctorAvailability(models.Model):
 
 

@@ -13,11 +13,13 @@ import os
 from pathlib import Path
 import environ
 from decouple import config
+import json
  
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+SETTINGS_DIR = Path(__file__).resolve().parent # Ruta a la carpeta de settings
 env = environ.Env()
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
@@ -40,6 +42,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -57,6 +60,7 @@ INSTALLED_APPS = [
     'booking',
     'doctor',
     'email_integration',
+    
 ]
 
 MIDDLEWARE = [
@@ -189,6 +193,34 @@ API_WHATSAPP_PHONE_ID = config('WHATSAPP_PHONE_ID', default=None )
 
 
 
+#OPENAI APIKEY
+API_KEY_OPENAI = config("OPENAI_API_KEY", default=None)
+
+
+def json_config(file_path):
+    """Función para cargar la configuración desde un archivo JSON."""
+    try:
+        with open(file_path, 'r') as f:
+            return json.load(f)
+    except FileNotFoundError:
+        print(f"Advertencia: No se encontró el archivo de configuración JSON en: {file_path}")
+        return {}
+    except json.JSONDecodeError as e:
+        print(f"Error al decodificar el archivo JSON en: {file_path}. Error: {e}")
+        return {}
+
+JAZZMIN_SETTINGS = config(
+    'JAZZMIN_SETTINGS_FILE',
+    default=str(SETTINGS_DIR / 'jazzmin_settings.json'),
+    cast=json_config
+)
+
+
+
+
+
+
+
 
 REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
@@ -202,8 +234,12 @@ REST_FRAMEWORK = {
 CELERY_BROKER_URL = 'redis://host.docker.internal:6379/0'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
-CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
-CELERY_RESULT_BACKEND = 'redis://host.docker.internal:6379/0'
+#CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
+#CELERY_RESULT_BACKEND = 'redis://host.docker.internal:6379/0'
+
+CELERY_BROKER_URL = 'redis://redis:6379/0'
+CELERY_RESULT_BACKEND = 'redis://redis:6379/0'
+
 
 
 

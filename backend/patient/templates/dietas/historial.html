@@ -1,0 +1,184 @@
+{% extends "dietas/base.html" %}
+{% load static %}
+
+{% block content %}
+<div id="flash-message-container" class="fixed top-4 right-4 z-50"></div>
+
+
+<div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+  {% csrf_token %}
+
+  <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+    <div class="flex justify-between items-center mb-6">
+      <h2 class="text-2xl font-bold text-emerald-700">Historial de dietas de {{ paciente.name }}</h2>
+      <a href="{% url 'admin:diet_diet_add' %}?patient={{ paciente.id }}" 
+         class="bg-[#b1a0c7] hover:bg-[#8e79b4] text-white py-2 px-4 rounded-lg flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+        </svg>
+        Nueva dieta
+      </a>
+    </div>
+
+    {% for dieta in page_obj %}
+    <div class="dieta-container bg-emerald-50 rounded-lg shadow border border-emerald-100 mb-8 overflow-hidden" data-dieta-id="{{ dieta.id }}">
+      <div class="bg-[#b1a0c7] px-6 py-4">
+        <h3 class="text-xl font-semibold text-white">Plan nutricional del {{ dieta.create_at|date:"d M Y" }}</h3>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="min-w-full bg-white">
+          <thead>
+            <tr class="bg-[#e4dfec] text-gray-800">
+              <th class="py-3 px-4 text-left font-semibold border-b border-emerald-200">Día</th>
+              <th class="py-3 px-4 text-left font-semibold border-b border-emerald-200">Desayuno</th>
+              <th class="py-3 px-4 text-left font-semibold border-b border-emerald-200">Almuerzo</th>
+              <th class="py-3 px-4 text-left font-semibold border-b border-emerald-200">Merienda</th>
+              <th class="py-3 px-4 text-left font-semibold border-b border-emerald-200">Cena</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for dia in dieta.dias %}
+              {% if dia %}
+              <tr class="hover:bg-[#f3e8ff]{% cycle '' 'bg-gray-50' %}" data-dia="{{ forloop.counter }}">
+                <td class="py-3 px-4 border-b border-gray-200">{{ forloop.counter }}</td>
+                <td class="py-3 px-4 border-b border-gray-200 editable-cell cursor-pointer hover:bg-[#eee6ff]" 
+                    data-campo="desayuno">{{ dia.desayuno }}</td>
+                <td class="py-3 px-4 border-b border-gray-200 editable-cell cursor-pointer hover:bg-[#eee6ff]" 
+                    data-campo="almuerzo">{{ dia.almuerzo }}</td>
+                <td class="py-3 px-4 border-b border-gray-200 editable-cell cursor-pointer hover:bg-[#eee6ff]" 
+                    data-campo="merienda">{{ dia.merienda }}</td>
+                <td class="py-3 px-4 border-b border-gray-200 editable-cell cursor-pointer hover:bg-[#eee6ff]" 
+                    data-campo="cena">{{ dia.cena }}</td>
+              </tr>
+              {% endif %}
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="px-6 py-4 bg-white flex flex-wrap gap-2">
+        <a href="{% url 'generar_pdf' dieta.id %}?action=download" target="_blank" 
+           class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md text-emerald-700 bg-emerald-100 hover:bg-emerald-200">
+          Descargar PDF
+        </a>
+
+       <!-- <button type="button" class="enviar-correo inline-flex items-center px-3 py-2 text-sm font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200" data-dieta-id="{{ dieta.id }}">
+          Enviar por correo
+        </button>-->
+
+        <!--<form method="POST" action="{% url 'eliminar_dieta' dieta.id %}" class="inline-block eliminar-form" data-dieta-id="{{ dieta.id }}">
+          {% csrf_token %}
+          <button type="submit" class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200">
+            Eliminar
+          </button>
+        </form>-->
+        <!-- Botón para enviar por correo -->
+          <button onclick="enviarPorCorreo({{ dieta.id }})"
+              class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200">
+              Enviar por correo
+          </button>
+
+          <!-- Botón para eliminar dieta -->
+          <button onclick="eliminarDieta({{ dieta.id }})"
+              class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200">
+              Eliminar
+          </button>
+
+
+        <button class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md text-purple-700 bg-purple-100 hover:bg-purple-200" id="guardar-dieta-{{dieta.id}}">
+          Guardar cambios
+        </button>
+
+        <a href="{% url 'duplicar_dieta' dieta.id %}" 
+           class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md text-amber-700 bg-amber-100 hover:bg-amber-200">
+          Duplicar
+        </a>
+      </div>
+    </div>
+    {% empty %}
+    <div class="bg-gray-50 rounded-lg p-8 text-center">
+      <p class="text-gray-600 text-lg">No hay dietas registradas para este paciente</p>
+    </div>
+    {% endfor %}
+
+    {% if page_obj %}
+    <div class="flex justify-center mt-6">
+      <nav class="inline-flex rounded-md shadow">
+        {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}" class="px-4 py-2 bg-white border border-gray-300 rounded-l-md text-emerald-600 hover:bg-gray-50">← Anterior</a>
+        {% else %}
+        <span class="px-4 py-2 bg-gray-100 border border-gray-300 rounded-l-md text-gray-400 cursor-not-allowed">← Anterior</span>
+        {% endif %}
+
+        <span class="px-4 py-2 bg-emerald-600 border border-emerald-600 text-white">
+          {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+        </span>
+
+        {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}" class="px-4 py-2 bg-white border border-gray-300 rounded-r-md text-emerald-600 hover:bg-gray-50">Siguiente →</a>
+        {% else %}
+        <span class="px-4 py-2 bg-gray-100 border border-gray-300 rounded-r-md text-gray-400 cursor-not-allowed">Siguiente →</span>
+        {% endif %}
+      </nav>
+    </div>
+    {% endif %}
+  </div>
+</div>
+<div id="flash-message-container" class="fixed top-4 right-4 z-50"></div>
+
+<script>
+  function eliminarDieta(dietaId) {
+    if (!confirm("¿Estás seguro de que deseas eliminar esta dieta?")) return;
+  
+    fetch(`/dieta/${dietaId}/eliminar/`, {
+      method: "POST",
+      headers: {
+        "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value,
+        "X-Requested-With": "XMLHttpRequest"
+      }
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        document.querySelector(`[data-dieta-id="${dietaId}"]`).remove();
+        mostrarNotificacion("✅ Dieta eliminada correctamente");
+      } else {
+        mostrarNotificacion("❌ No se pudo eliminar");
+      }
+    })
+    .catch(() => mostrarNotificacion("❌ Error en la solicitud"));
+  }
+  
+  function enviarPorCorreo(dietaId) {
+    fetch(`/dieta/${dietaId}/pdf/?action=email`, {
+      method: "GET",
+      headers: {
+        "X-Requested-With": "XMLHttpRequest"
+      }
+    })
+    .then(res => res.json())
+    .then(data => {
+      mostrarNotificacion(data.message || "📧 Correo enviado correctamente");
+      setTimeout(() => window.location.reload(), 1000);
+    })
+    .catch(() => mostrarNotificacion("❌ Error al enviar el correo"));
+  }
+  
+  function mostrarNotificacion(mensaje) {
+    const cont = document.getElementById('flash-message-container');
+    const div = document.createElement('div');
+    div.className = "bg-green-500 text-white px-4 py-2 rounded shadow flex justify-between items-center mb-2";
+    div.innerHTML = `
+      <span>${mensaje}</span>
+      <button onclick="this.parentElement.remove()" class="ml-4 font-bold">×</button>
+    `;
+    cont.appendChild(div);
+    setTimeout(() => div.remove(), 3000);
+  }
+  </script>
+  
+
+
+{% endblock %}
+

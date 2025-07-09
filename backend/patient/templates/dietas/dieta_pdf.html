@@ -1,0 +1,211 @@
+{% extends "dietas/base.html" %}
+
+{% block content %}
+
+<style>
+
+@page {
+  size: A4 landscape;
+  margin: 0.2cm;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+}
+
+
+.tabla-dieta {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto; /* centra la tabla */
+  border-collapse: collapse;
+}
+
+
+.fila-par {
+  background-color: #ffffff;
+}
+
+.fila-impar {
+  background-color: #e4dfec; 
+}
+
+th {
+  background-color: #b1a0c7;
+  border: 1px solid #ccc;
+  height: 30px;
+  padding-top: 5px;
+  text-align: center;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+td {
+  border: 1px solid #ccc;
+  height: 70px;
+  text-align: justify;
+  font-size: 12px;
+  padding-left: 6px;
+  padding-right: 6px;
+}
+
+.recomendaciones {
+  margin-top: 20px;
+  padding: 10px;
+  background-color: #fff8dc;
+  border-left: 4px solid #facc15;
+  color: #8a6d3b;
+}
+
+
+
+.dia {
+  width: 4%;
+  text-align: center;
+}
+
+.merienda {
+  width: 15%;
+}
+
+.almuerzo {
+  width: 29%;
+}
+
+.desayuno {
+  width: 29%;
+}
+
+.cena {
+  width: 27%;
+}
+
+
+
+
+.titulo h1{
+  text-align: center;
+  display: block; /* Hace que el bloque de título no ocupe todo el ancho */
+  padding-left: 5px;
+ 
+  
+  }
+
+  .titulo h1 img{
+
+    margin-right: 15px;
+  }
+
+
+
+
+
+.fecha {
+  display: inline-block;  /* Hace que el contenedor se ajuste al contenido */
+  padding: 5px 10px;      /* Añade un poco de espacio interno */
+  margin-top: 10px;       /* Ajusta la distancia desde arriba */
+  font-weight: bold;
+  text-align: right;
+}
+
+.patient-name{
+
+  font-family: sans-serif;
+  font-size: 16px;
+}
+
+.recomendaciones-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.recomendaciones {
+  width: 100%;
+  max-width: 800px;
+  margin-top: 8px;
+  padding: 15px;
+  background-color: #f4f4f9; /* Gris muy claro */
+  border-left: 5px solid #8fa3d1; /* Azul suave */
+  color: #333; /* Gris oscuro */
+  text-align: center;
+  font-size: 16px;
+  line-height: 1.6; /* Mayor interlineado para mayor legibilidad */
+  font-family: 'Arial', sans-serif; /* Tipografía moderna */
+  font-weight: 400; /* Peso normal */
+  box-sizing: border-box;
+}
+
+/* Estilo del encabezado "Recomendaciones" */
+.recomendaciones span {
+  font-weight: bold;
+  color: #4e5b7f; /* Azul oscuro para destacar */
+  font-size: 18px; /* Mayor tamaño para resaltar */
+}
+
+
+
+
+
+
+
+
+
+</style>
+
+<div class="fecha">Fecha: {{ dieta.create_at|date:"d/m/Y" }}</div>
+
+  <div class="titulo">
+    <div class="logo">
+      
+    </div>
+    
+       <h1>
+        <img src="{{ logo_path }}" alt="Logo" style="width: 100px;"/>
+        <span style="color: white;">-----</span>
+        <span class="patient-name">Plan Nutricional: {{ dieta.patient.name }}</span>
+      </h1>
+  </div>
+
+
+
+
+<table class="tabla-dieta ">
+  <thead>
+    <tr>
+      <th class="dia">Día</th>
+      <th class="desayuno">Desayuno</th>
+      <th class="almuerzo">Almuerzo</th>
+      <th class="merienda">Merienda</th>
+      <th class="cena">Cena</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for dia in dias %}
+      {% if dia %}
+      <tr class="{% cycle 'fila-par' 'fila-impar' %}">
+        <td class="dia">{{ forloop.counter }}</td>
+        <td>{{ dia.desayuno }}</td>
+        <td>{{ dia.almuerzo }}</td>
+        <td>{{ dia.merienda }}</td>
+        <td>{{ dia.cena }}</td>
+      </tr>
+      {% endif %}
+    {% endfor %}
+  </tbody>
+    
+</table>
+
+
+<div class="recomendaciones-container">
+  <div class="recomendaciones">
+    <span>Recomendaciones:</span> consumir mínimo entre 8 a 10 vasos de agua y dormir de 7 a 8 horas al día,
+    los aderezos limón, sal y aceite de oliva.
+  </div>
+</div>
+       
+
+
+{% endblock %}

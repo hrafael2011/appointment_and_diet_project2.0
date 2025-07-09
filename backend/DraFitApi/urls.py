@@ -18,6 +18,15 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from patient.viewHistorial import(historial_dietas, 
+                                  duplicar_dieta ,
+                                  generar_pdf, 
+                                  esperar_generacion_dieta,
+                                  verificar_dieta_generada,
+                                  eliminar_dieta
+                                  ) 
+
+from diet.views import actualizar_dieta
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -25,8 +34,15 @@ urlpatterns = [
     path('api/', include('core.urls')),
     path('api/', include('booking.urls')),
     path('api/', include('patient.urls')),
-    path('api/', include('diet.urls')),
     path('api/', include('doctor.urls')),
+    path('historial-dietas/<int:patient_id>/', historial_dietas, name='historial_dietas'),
+    path('dieta/<int:dieta_id>/pdf/', generar_pdf, name='generar_pdf'),
+    path('dieta/<int:dieta_id>/duplicar/', duplicar_dieta, name='duplicar_dieta'),
+    path('actualizar-dieta/', actualizar_dieta, name='actualizar_dieta'),
+    path('esperar-dieta/<int:patient_id>/', esperar_generacion_dieta, name='esperar_dieta'),
+    path('verificar-dieta-generada/<int:patient_id>/', verificar_dieta_generada, name='verificar_dieta_generada'),
+    path('dieta/<int:dieta_id>/eliminar/', eliminar_dieta, name='eliminar_dieta'),
+    
    
     
 

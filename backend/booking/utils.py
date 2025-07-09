@@ -5,7 +5,7 @@ import os
 
 import requests
 from rest_framework.exceptions import ValidationError
-from .task import send_reminder_email
+#from .task import send_reminder_email
 
 from datetime import datetime, timedelta
 from django.utils import timezone

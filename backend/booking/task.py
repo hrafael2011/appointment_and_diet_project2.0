@@ -13,14 +13,14 @@ import logging
 @shared_task
 def send_confirmation_mail(email_patient, confirmation_token, date, hour):
     asunto = "Confirma tu cita"
-    enlace_confirmacion = f"http://localhost:8000/api/appointment/confirm/?confirmation_token={confirmation_token}"
+    enlace_confirmacion = f"http://localhost/api/appointment/confirm/?confirmation_token={confirmation_token}"
     mensaje = f"Por favor, confirma tu cita para {date} a las {hour}. Haz clic aquí: {enlace_confirmacion}"
     send_mail(asunto, mensaje, settings.EMAIL_HOST_USER, [email_patient])
 
 @shared_task
 def send_confirmation_final_mail(email_patient, email_doctor, date, hour, confirmation_token):
     asunto = "Cita Confirmada"
-    cancellation_link = f'http://localhost:5173/cancelacion-cita?token={confirmation_token}'
+    cancellation_link = f'http://localhost:3000/cancelacion-cita?token={confirmation_token}'
     mensaje = (f"Tu cita ha sido confirmada para {date} a las {hour}.\n\n"
                f"Si deseas cancelarla, haz clic aquí: {cancellation_link}"     )
     send_mail(asunto, mensaje, settings.EMAIL_HOST_USER, [email_patient, email_doctor])
@@ -118,7 +118,7 @@ WHATSAPP_PHONE_ID='636625479530255'
 
 
 
-WHATSAPP_URL = f"https://graph.facebook.com/v18.0/{WHATSAPP_PHONE_ID}/messages"
+WHATSAPP_URL = f"https://graph.facebook.com/v22.0/{WHATSAPP_PHONE_ID}/messages"
 
 HEADERS = {
     "Authorization": f"Bearer {WHATSAPP_TOKEN}",
@@ -163,7 +163,7 @@ def send_whatsapp_message_task(self, patient_name, doctor_name, appointment_date
     
 
 @shared_task(bind=True, autoretry_for=(requests.exceptions.RequestException,), retry_backoff=5, max_retries=3)
-def send_whatsapp_message_rimender_1_hour_before_task(self, patient_name, doctor_name, appointment_hour, patient_whatsapp, form_link):
+def send_whatsapp_reminder(self, patient_name, doctor_name, appointment_hour, patient_whatsapp, form_link):
     """
     Tarea Celery para enviar mensajes de WhatsApp con la plantilla aprobada.
     """

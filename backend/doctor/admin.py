@@ -15,6 +15,7 @@ class DoctorAdmin(admin.ModelAdmin):
     list_display = ('name', 'user', 'whatsapp_number')  # Campos visibles en la lista
     search_fields = ('name', 'whatsapp_number')  # Buscar por nombre y número de WhatsApp
     list_filter = ('user__is_active',)  # Filtro por estado activo del usuario
+    readonly_fields = ("email",)
 
 
 # Registro de la clase AvailabilityAdmin en el admin de Django
@@ -25,6 +26,15 @@ class DoctorAvailability(SoftDeleteMixin, admin.ModelAdmin):
     fields =['date', 'start_hour', 'end_hour', 'available','doctor']
     #readonly_fields = ['doctor'] # Hacer solo lectura para 'doctor'
     exclude = ('is_hidden',)
+
+
+    def get_start_hour_24(self, obj):
+        return obj.start_hour.strftime('%H:%M')
+    get_start_hour_24.short_description = 'Hora Inicio'
+
+    def get_end_hour_24(self, obj):
+        return obj.end_hour.strftime('%H:%M')
+    get_end_hour_24.short_description = 'Hora Fin'
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)

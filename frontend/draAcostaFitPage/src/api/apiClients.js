@@ -20,7 +20,7 @@ export default apiClient;*/
 
 import axios from 'axios';
 
-const API_BASE_URL = "http://localhost:8000/api/"; // 🔥 Corregido
+const API_BASE_URL = "http://localhost/api/"; // 🔥 Corregido
 
 const api = axios.create({
     baseURL: API_BASE_URL,
@@ -39,6 +39,22 @@ export const postAppointment = async (appointmentData) => { // 🔥 Debe recibir
         throw error;
     }
 };
+
+export const confirmAppointment = async (token) => {
+    if (!token) {
+        throw new Error('El token es requerido');
+    }
+    try {
+        const response = await api.get(`appointment/confirm/?confirmation_token=${token}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error al confirmar cita:', error);
+        throw error.response?.data?.error || "Error al confirmar la cita";
+    }
+};
+
+
+
 
 export const validateCancellation = async(token) =>{
     try{
